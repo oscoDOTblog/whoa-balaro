@@ -1,10 +1,24 @@
 "use client";
 
-import { useMemo, useReducer, useState } from "react";
+import { useMemo, useReducer, useState, useEffect } from "react";
 import styles from "./page.module.css";
-import { getRankLabel, getSuitSymbol } from "../lib/deck";
+import { getRankLabel, getSuitSymbol, SUITS } from "../lib/deck";
 import { gameReducer, createInitialGameState } from "../lib/gameState";
 import { getBlindByIndex, getBlindTarget } from "../lib/blinds";
+import DeckRemainingPopup from "./components/DeckRemainingPopup";
+
+const THEME_KEY = "balatro-theme";
+
+function sortHandByValue(cards) {
+  return [...cards].sort((a, b) => b.rank - a.rank);
+}
+
+function sortHandBySuit(cards) {
+  return [...cards].sort((a, b) => {
+    const suitOrder = SUITS.indexOf(a.suit) - SUITS.indexOf(b.suit);
+    return suitOrder !== 0 ? suitOrder : a.rank - b.rank;
+  });
+}
 
 const HAND_TYPE_LABELS = {
   highCard: "High Card",
@@ -42,6 +56,23 @@ function formatEvent(event) {
 export default function BalatroRedDeck() {
   const [state, dispatch] = useReducer(gameReducer, undefined, createInitialGameState);
   const [selectedIds, setSelectedIds] = useState([]);
+  const [sortMode, setSortMode] = useState("none"); // 'none' | 'value' | 'suit'
+  const [theme, setTheme] = useState("system"); // 'light' | 'dark' | 'system'
+  const [showDeckPopup, setShowDeckPopup] = useState(false);
+
+  // Persist theme and apply to document
+  useEffect(() => {
+    const stored = typeof window !== "undefined" ? localStorage.getItem(THEME_KEY) : null;
+    if (stored === "light" || stored === "dark" || stored === "system") setTheme(stored);
+  }, []);
+  useEffect(() => {
+    const resolved =
+      theme === "system"
+        ? (typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+        : theme;
+    if (typeof document !== "undefined") document.documentElement.setAttribute("data-theme", resolved);
+    if (theme !== "system" && typeof localStorage !== "undefined") localStorage.setItem(THEME_KEY, theme);
+  }, [theme]);
 
   const blind = useMemo(() => {
     if (!state?.run) return null;
@@ -59,6 +90,13 @@ export default function BalatroRedDeck() {
     state.status === "playing" && selectedIds.length >= 1 && selectedIds.length <= 5 && state.round.discardsLeft > 0;
 
   const eventLine = formatEvent(state?.ui?.lastEvent);
+
+  const displayCards = useMemo(() => {
+    const hand = state.round.handCards || [];
+    if (sortMode === "value") return sortHandByValue(hand);
+    if (sortMode === "suit") return sortHandBySuit(hand);
+    return hand;
+  }, [state.round.handCards, sortMode]);
 
   function toggleSelect(cardId) {
     setSelectedIds((prev) => {
@@ -89,6 +127,33 @@ export default function BalatroRedDeck() {
         <div className={styles.title}>
           <h1>Balatro Clone (Red Deck Core)</h1>
           <p className={styles.subtitle}>Minimal generic run: deal 8, discard/redraw, play 5-card poker hands vs blinds.</p>
+          <div className={styles.themeRow}>
+            <span className={styles.themeLabel}>Theme:</span>
+            <button
+              type="button"
+              className={styles.themeBtn}
+              onClick={() => setTheme("light")}
+              aria-pressed={theme === "light"}
+            >
+              Light
+            </button>
+            <button
+              type="button"
+              className={styles.themeBtn}
+              onClick={() => setTheme("dark")}
+              aria-pressed={theme === "dark"}
+            >
+              Dark
+            </button>
+            <button
+              type="button"
+              className={styles.themeBtn}
+              onClick={() => setTheme("system")}
+              aria-pressed={theme === "system"}
+            >
+              System
+            </button>
+          </div>
         </div>
 
         <div className={styles.statusPanel}>
@@ -135,15 +200,51 @@ export default function BalatroRedDeck() {
             Click cards to select. Select exactly 5 to play a hand, or select 1–5 to discard and redraw.
           </div>
 
+          <div className={styles.sortRow}>
+            <span className={styles.sortLabel}>Sort:</span>
+            <button
+              type="button"
+              className={styles.sortBtn}
+              onClick={() => setSortMode("none")}
+              aria-pressed={sortMode === "none"}
+            >
+              Deal order
+            </button>
+            <button
+              type="button"
+              className={styles.sortBtn}
+              onClick={() => setSortMode("value")}
+              aria-pressed={sortMode === "value"}
+            >
+              By value
+            </button>
+            <button
+              type="button"
+              className={styles.sortBtn}
+              onClick={() => setSortMode("suit")}
+              aria-pressed={sortMode === "suit"}
+            >
+              By suit
+            </button>
+          </div>
+
           <div className={styles.cardGrid} role="grid" aria-label="Cards in hand">
-            {state.round.handCards.map((card) => {
+            {displayCards.map((card) => {
               const selected = selectedIds.includes(card.id);
               const suitSymbol = getSuitSymbol(card.suit);
               const rankLabel = getRankLabel(card.rank);
+              const suitClass =
+                card.suit === "spades"
+                  ? styles.cardSuitSpades
+                  : card.suit === "hearts"
+                    ? styles.cardSuitHearts
+                    : card.suit === "diamonds"
+                      ? styles.cardSuitDiamonds
+                      : styles.cardSuitClubs;
               return (
                 <div
                   key={card.id}
-                  className={`${styles.card} ${selected ? styles.cardSelected : ""}`}
+                  className={`${styles.card} ${suitClass} ${selected ? styles.cardSelected : ""}`}
                   onClick={() => toggleSelect(card.id)}
                   role="button"
                   tabIndex={0}
@@ -167,7 +268,23 @@ export default function BalatroRedDeck() {
               <button className={styles.btn} onClick={onDiscard} disabled={!canDiscard}>
                 Discard & Redraw (uses 1 discard)
               </button>
+              <button
+                type="button"
+                className={styles.deckBtn}
+                onClick={() => setShowDeckPopup(true)}
+                aria-haspopup="dialog"
+                aria-expanded={showDeckPopup}
+              >
+                Deck remaining
+              </button>
             </div>
+            <DeckRemainingPopup
+              isOpen={showDeckPopup}
+              onClose={() => setShowDeckPopup(false)}
+              deck={state.round.deck || []}
+              discardPile={state.round.discardPile || []}
+              handCount={(state.round.handCards || []).length}
+            />
 
             {state.round.lastHandScore && (
               <div className={styles.hintRow}>

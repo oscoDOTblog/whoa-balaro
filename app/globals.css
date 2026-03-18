@@ -1,4 +1,6 @@
-:root {
+/* Light theme (default and explicit) */
+:root,
+[data-theme="light"] {
   --background: #ffffff;
   --foreground: #0b0b12;
 
@@ -6,23 +8,48 @@
   --card-foreground: #0b0b12;
   --card-border: rgba(10, 10, 20, 0.18);
 
-  --accent: #ff2bd6; /* hot pink */
+  --accent: #ff2bd6;
   --accent-strong: #ff00cc;
 
   --muted: rgba(10, 10, 20, 0.7);
+
+  /* Suit colors */
+  --suit-spades: #1a1a2e;
+  --suit-hearts: #c41e3a;
+  --suit-diamonds: #b8860b;
+  --suit-clubs: #2e7d32;
 }
 
+/* Dark theme: explicit and system preference (for initial paint before JS) */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --background: #07070a;
     --foreground: #f2f2f7;
-
     --card-background: #0f0f16;
     --card-foreground: #f2f2f7;
     --card-border: rgba(255, 255, 255, 0.14);
-
     --muted: rgba(242, 242, 247, 0.75);
+    --suit-spades: #6b7fd7;
+    --suit-hearts: #e85a71;
+    --suit-diamonds: #e8b84a;
+    --suit-clubs: #5cb85c;
   }
+}
+
+[data-theme="dark"] {
+  --background: #07070a;
+  --foreground: #f2f2f7;
+
+  --card-background: #0f0f16;
+  --card-foreground: #f2f2f7;
+  --card-border: rgba(255, 255, 255, 0.14);
+
+  --muted: rgba(242, 242, 247, 0.75);
+
+  --suit-spades: #6b7fd7;
+  --suit-hearts: #e85a71;
+  --suit-diamonds: #e8b84a;
+  --suit-clubs: #5cb85c;
 }
 
 html,
