@@ -42,6 +42,21 @@
   line-height: 1.3;
 }
 
+.projectLink {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+  transition: color 120ms ease, text-decoration 120ms ease;
+}
+
+.projectLink:hover {
+  color: var(--accent-strong);
+  text-decoration: underline;
+}
+
 .themeRow {
   display: flex;
   align-items: center;

@@ -127,6 +127,14 @@ export default function BalatroRedDeck() {
         <div className={styles.title}>
           <h1>Balatro Clone (Red Deck Core)</h1>
           <p className={styles.subtitle}>Minimal generic run: deal 8, discard/redraw, play 5-card poker hands vs blinds.</p>
+          <a
+            href="https://github.com/oscoDOTblog/whoa-balaro"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.projectLink}
+          >
+            View on GitHub
+          </a>
           <div className={styles.themeRow}>
             <span className={styles.themeLabel}>Theme:</span>
             <button
