@@ -1,0 +1,189 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.dialog {
+  background: var(--card-background);
+  color: var(--card-foreground);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  max-width: 520px;
+  width: 100%;
+  max-height: 85vh;
+  overflow: auto;
+  animation: slideIn 0.2s ease;
+}
+
+@keyframes slideIn {
+  from {
+    transform: scale(0.96);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 16px 0;
+  gap: 12px;
+}
+
+.title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.closeBtn {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px;
+  margin: -4px -4px -4px 0;
+  border-radius: 8px;
+  transition: color 120ms ease, background 120ms ease;
+}
+
+.closeBtn:hover {
+  color: var(--foreground);
+  background: var(--card-border);
+}
+
+.body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.summaryRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.value {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.gridWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow-x: auto;
+}
+
+.gridRow {
+  display: grid;
+  grid-template-columns: 80px repeat(13, 1fr) 28px;
+  gap: 0;
+  min-width: min-content;
+}
+
+.gridCellHeader {
+  padding: 8px 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--muted);
+  border-bottom: 1px solid var(--card-border);
+  background: rgba(0, 0, 0, 0.04);
+}
+
+:global(html[data-theme="dark"]) .gridCellHeader {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.gridCellHeader:first-child {
+  text-align: left;
+}
+
+.gridCellSuit {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  font-size: 12px;
+  border-right: 1px solid var(--card-border);
+  border-bottom: 1px solid var(--card-border);
+  background: rgba(0, 0, 0, 0.02);
+}
+
+:global(html[data-theme="dark"]) .gridCellSuit {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.suitSymbol {
+  font-size: 14px;
+  font-weight: 700;
+  min-width: 1.2em;
+}
+
+.suitLabel {
+  color: var(--muted);
+  text-transform: capitalize;
+}
+
+.gridCell {
+  padding: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  border-right: 1px solid var(--card-border);
+  border-bottom: 1px solid var(--card-border);
+}
+
+.gridCellTotal {
+  padding: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  border-bottom: 1px solid var(--card-border);
+  background: rgba(0, 0, 0, 0.03);
+  color: var(--accent);
+}
+
+:global(html[data-theme="dark"]) .gridCellTotal {
+  background: rgba(255, 255, 255, 0.06);
+}
