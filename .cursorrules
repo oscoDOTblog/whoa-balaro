@@ -1,0 +1,4 @@
+do not use typescript
+do not use tailwind css
+when creating css, use nextjs css modules and make sure it's mobile-responsive
+develop new features with code that is as modular and scalable as possible
